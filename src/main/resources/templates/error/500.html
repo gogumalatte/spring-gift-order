@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>서버 오류</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+  <h1>🚨 500 - 서버 내부 오류</h1>
+  <div class="alert error" th:text="${errorMessage}">
+    서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.
+  </div>
+  <a href="/admin/items" class="btn primary">상품 목록으로 돌아가기</a>
+</div>
+</body>
+</html>

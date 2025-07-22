@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>처리 중 충돌 발생</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+  <h1>🤔 409 - 요청 처리 중 충돌이 발생했습니다</h1>
+  <div class="alert error" th:text="${errorMessage}">
+    이미 존재하는 상품 이름입니다.
+  </div>
+  <a href="javascript:history.back()" class="btn secondary">이전 페이지로 돌아가기</a>
+  <a href="/admin/items" class="btn primary">상품 목록으로</a>
+</div>
+</body>
+</html>
