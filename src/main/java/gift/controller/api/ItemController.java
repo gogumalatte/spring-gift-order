@@ -10,8 +10,8 @@ import gift.service.ItemService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -54,11 +54,11 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ItemResponse>> getAllItems(
+    public ResponseEntity<Slice<ItemResponse>> getAllItems(
         @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        Page<ItemResponse> itemPage = itemService.getAllItems(pageable);
-        return ResponseEntity.ok(itemPage);
+        Slice<ItemResponse> itemSlice = itemService.getAllItems(pageable);
+        return ResponseEntity.ok(itemSlice);
     }
 
     @Authenticated

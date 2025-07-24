@@ -14,8 +14,8 @@ import gift.repository.ItemRepository;
 import gift.repository.OptionRepository;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +31,9 @@ public class ItemService {
         this.optionRepository = optionRepository;
     }
 
-    public Page<ItemResponse> getAllItems(Pageable pageable) {
-        Page<Item> itemPage = itemRepository.findAll(pageable);
-        return itemPage.map(ItemResponse::from);
+    public Slice<ItemResponse> getAllItems(Pageable pageable) {
+        Slice<Item> itemSlice = itemRepository.findSliceBy(pageable);
+        return itemSlice.map(ItemResponse::from);
     }
 
     public ItemResponse getItemById(Long id) {
