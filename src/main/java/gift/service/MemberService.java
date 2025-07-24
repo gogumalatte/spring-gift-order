@@ -1,5 +1,6 @@
 package gift.service;
 
+import gift.dto.KakaoUserInfoResponse;
 import gift.dto.LoginResponse;
 import gift.dto.MemberRegisterRequest;
 import gift.dto.MemberLoginRequest;
@@ -44,5 +45,16 @@ public class MemberService {
 
         String token = jwtUtil.createToken(member.getEmail(), member.getRole().name());
         return new LoginResponse(token);
+    }
+
+    public Member loginOrRegister(KakaoUserInfoResponse userInfo) {
+        String email = userInfo.getEmail();
+        return memberRepository.findByEmail(email)
+            .orElseGet(() -> {
+                String tempPassword = "kakao_temp_password";
+                String hashedPassword = BCrypt.hashpw(tempPassword, BCrypt.gensalt());
+                Member newMember = new Member(null, email, hashedPassword, Role.USER);
+                return memberRepository.save(newMember);
+            });
     }
 }
