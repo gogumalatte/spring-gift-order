@@ -9,10 +9,6 @@
 <div class="container">
   <h1 th:text="${itemId == null ? '새 상품 등록' : '상품 수정'}">상품 폼</h1>
 
-  <div th:if="${#fields.hasErrors()}" class="alert error">
-    <p th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
-  </div>
-
   <form th:action="${itemId == null ? '/admin/items' : '/admin/items/' + itemId + '/update'}"
         th:object="${item}" method="post">
 

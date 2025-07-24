@@ -44,10 +44,8 @@ public class AdminItemController {
     }
 
     @GetMapping("/new")
-    public String newItemForm(Model model) {
-        ItemRequest itemRequest = new ItemRequest();
-        itemRequest.setOptions(List.of(new OptionRequest()));
-        model.addAttribute("item", itemRequest);
+    public String newItemForm(@ModelAttribute("item") ItemRequest itemRequest) {
+        itemRequest.setOptions(List.of(new OptionRequest(null, 1)));
         return "admin/items/form";
     }
 

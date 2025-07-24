@@ -45,15 +45,13 @@ public class ItemService {
     @Transactional
     public ItemResponse createItem(ItemRequest request, Member loginMember) {
         validateAdminRoleForKakaoKeyword(request.getName(), loginMember);
-
         Item item = new Item(null, request.getName(), request.getPrice(), request.getImageUrl());
         Item savedItem = itemRepository.save(item);
-
         List<Option> options = request.getOptions().stream()
             .map(optionRequest -> optionRequest.toEntity(savedItem))
             .toList();
         optionRepository.saveAll(options);
-
+        savedItem.getOptions().addAll(options);
         return ItemResponse.from(savedItem);
     }
 
@@ -64,6 +62,16 @@ public class ItemService {
             .orElseThrow(() -> new ItemNotFoundException("수정할 상품을 찾을 수 없습니다: " + id));
 
         item.updateInfo(request.getName(), request.getPrice(), request.getImageUrl());
+
+        item.getOptions().clear();
+
+        List<Option> newOptions = request.getOptions().stream()
+            .map(optionRequest -> optionRequest.toEntity(item))
+            .toList();
+        item.getOptions().addAll(newOptions);
+
+        itemRepository.save(item);
+
         return ItemResponse.from(item);
     }
 
