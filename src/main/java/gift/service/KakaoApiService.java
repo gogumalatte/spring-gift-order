@@ -20,9 +20,6 @@ public class KakaoApiService {
     @Value("${kakao.client.id}")
     private String clientId;
 
-    @Value("${kakao.client.secret}")
-    private String clientSecret;
-
     @Value("${kakao.redirect.uri}")
     private String redirectUri;
 
@@ -40,13 +37,11 @@ public class KakaoApiService {
         body.add("client_id", clientId);
         body.add("redirect_uri", redirectUri);
         body.add("code", code);
-        body.add("client_secret", clientSecret);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
         KakaoTokenResponse response = restTemplate.exchange(
             tokenUrl, HttpMethod.POST, requestEntity, KakaoTokenResponse.class
         ).getBody();
-        
         if (response == null) {
             throw new RuntimeException("카카오 토큰을 발급받는데 실패했습니다.");
         }
