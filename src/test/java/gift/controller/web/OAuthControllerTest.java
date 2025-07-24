@@ -68,8 +68,13 @@ class OAuthControllerTest {
     void kakaoCallback() throws Exception {
         String testAuthorizationCode = "test_code";
         String testAccessToken = "test_access_token";
-        KakaoUserInfoResponse testUserInfo = new KakaoUserInfoResponse(12345L, Map.of("email", "test@kakao.com"));
-        Member testMember = new Member(1L, "test@kakao.com", "password", Role.USER);
+
+        KakaoUserInfoResponse testUserInfo = new KakaoUserInfoResponse(12345L,
+            Map.of("email", "test@kakao.com"),
+            Map.of("nickname", "테스트유저", "profile_image", "test.jpg"));
+
+        Member testMember = new Member(1L, "test@kakao.com", "password", Role.USER, "테스트유저", "test.jpg");
+
         String testJwtToken = "test_jwt_token";
 
         given(kakaoApiService.getAccessToken(testAuthorizationCode)).willReturn(testAccessToken);

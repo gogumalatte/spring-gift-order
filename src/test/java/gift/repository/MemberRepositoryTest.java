@@ -19,7 +19,7 @@ class MemberRepositoryTest {
     @Test
     @DisplayName("이메일로 회원 조회 테스트")
     void findByEmail() {
-        Member member = new Member(null, "test@example.com", "password123", Role.USER);
+        Member member = new Member(null, "test@example.com", "password12з", Role.USER, null, null);
         memberRepository.save(member);
 
         Optional<Member> foundMemberOptional = memberRepository.findByEmail("test@example.com");

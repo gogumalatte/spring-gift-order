@@ -39,10 +39,8 @@ class KakaoApiServiceTest {
     @Test
     @DisplayName("액세스 토큰 받기 테스트")
     void getAccessToken() {
-        // given: restTemplate이 특정 요청을 받으면, 미리 정의된 응답을 반환하도록 설정
         KakaoTokenResponse mockResponse = new KakaoTokenResponse("bearer", "test-access-token", null, null, null, null);
 
-        // [수정] when(...).thenReturn(...) 코드 추가
         when(restTemplate.exchange(
             eq("https://kauth.kakao.com/oauth/token"),
             eq(HttpMethod.POST),
@@ -50,20 +48,18 @@ class KakaoApiServiceTest {
             eq(KakaoTokenResponse.class)
         )).thenReturn(ResponseEntity.ok(mockResponse));
 
-        // when
         String accessToken = kakaoApiService.getAccessToken("test-auth-code");
 
-        // then
         assertThat(accessToken).isEqualTo("test-access-token");
     }
 
     @Test
     @DisplayName("사용자 정보 받기 테스트")
     void getUserInfo() {
-        // given
-        KakaoUserInfoResponse mockResponse = new KakaoUserInfoResponse(1L, Map.of("email", "test@example.com"));
+        KakaoUserInfoResponse mockResponse = new KakaoUserInfoResponse(1L,
+            Map.of("email", "test@example.com"),
+            Map.of("nickname", "테스트유저"));
 
-        // [수정] when(...).thenReturn(...) 코드 추가
         when(restTemplate.exchange(
             eq("https://kapi.kakao.com/v2/user/me"),
             eq(HttpMethod.GET),
@@ -71,10 +67,10 @@ class KakaoApiServiceTest {
             eq(KakaoUserInfoResponse.class)
         )).thenReturn(ResponseEntity.ok(mockResponse));
 
-        // when
         KakaoUserInfoResponse userInfo = kakaoApiService.getUserInfo("test-access-token");
 
-        // then
         assertThat(userInfo.getEmail()).isEqualTo("test@example.com");
+
+        assertThat(userInfo.getNickname()).isEqualTo("테스트유저");
     }
 }
