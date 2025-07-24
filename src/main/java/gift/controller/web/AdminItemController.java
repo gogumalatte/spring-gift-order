@@ -9,8 +9,8 @@ import gift.login.Login;
 import gift.service.ItemService;
 import jakarta.validation.Valid;
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/items")
+@Authenticated
 public class AdminItemController {
 
     private final ItemService itemService;
@@ -39,8 +40,8 @@ public class AdminItemController {
         Model model,
         @Login Member loginMember
     ) {
-        Page<ItemResponse> itemPage = itemService.getAllItems(pageable);
-        model.addAttribute("itemPage", itemPage);
+        Slice<ItemResponse> itemSlice = itemService.getAllItems(pageable);
+        model.addAttribute("itemSlice", itemSlice);
         model.addAttribute("loginMember", loginMember);
         return "admin/items/list";
     }
