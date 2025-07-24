@@ -70,8 +70,6 @@ public class ItemService {
             .toList();
         item.getOptions().addAll(newOptions);
 
-        itemRepository.save(item);
-
         return ItemResponse.from(item);
     }
 
