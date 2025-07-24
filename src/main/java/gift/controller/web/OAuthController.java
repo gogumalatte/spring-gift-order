@@ -20,7 +20,7 @@ public class OAuthController {
     @Value("${kakao.redirect.uri}")
     private String kakaoRedirectUri;
 
-    public OAuthController(KakaoApiService kakaoApiService) { // 생성자 수정
+    public OAuthController(KakaoApiService kakaoApiService) {
         this.kakaoApiService = kakaoApiService;
     }
 
@@ -37,6 +37,7 @@ public class OAuthController {
         String accessToken = kakaoApiService.getAccessToken(code);
         KakaoUserInfoResponse userInfo = kakaoApiService.getUserInfo(accessToken);
 
-        return "redirect:/some-success-page?email=" + userInfo.getEmail();
+        System.out.println("카카오 로그인 성공! 이메일: " + userInfo.getEmail());
+        return "redirect:/";
     }
 }
