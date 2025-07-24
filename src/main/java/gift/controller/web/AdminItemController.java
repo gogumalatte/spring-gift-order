@@ -125,6 +125,7 @@ public class AdminItemController {
         @PathVariable("productId") Long productId,
         @Valid @ModelAttribute("option") OptionRequest optionRequest,
         BindingResult bindingResult,
+        @Login Member loginMember,
         Model model
     ) {
         if (bindingResult.hasErrors()) {
@@ -132,7 +133,8 @@ public class AdminItemController {
             model.addAttribute("item", item);
             return "admin/items/detail";
         }
-        itemService.addOptionToItem(productId, optionRequest);
+
+        itemService.addOptionToItem(productId, optionRequest, loginMember);
         return "redirect:/admin/items/" + productId;
     }
 }
