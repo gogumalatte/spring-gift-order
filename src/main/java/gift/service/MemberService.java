@@ -28,7 +28,7 @@ public class MemberService {
     @Transactional
     public LoginResponse register(MemberRegisterRequest request) {
         String hashedPassword = BCrypt.hashpw(request.password(), BCrypt.gensalt());
-        Member newMember = new Member(null, request.email(), hashedPassword, Role.USER);
+        Member newMember = new Member(null, request.email(), hashedPassword, Role.USER, null, null);
         memberRepository.save(newMember);
 
         String token = jwtUtil.createToken(newMember.getEmail(), newMember.getRole().name());
@@ -53,13 +53,14 @@ public class MemberService {
         if (email == null) {
             email = userInfo.id() + "@kakao.temp.email";
         }
+        String nickname = userInfo.getNickname();
+        String profileImageUrl = userInfo.getProfileImageUrl();
         final String finalEmail = email;
-
         return memberRepository.findByEmail(finalEmail)
             .orElseGet(() -> {
                 String tempPassword = "kakao_temp_password";
                 String hashedPassword = BCrypt.hashpw(tempPassword, BCrypt.gensalt());
-                Member newMember = new Member(null, finalEmail, hashedPassword, Role.USER);
+                Member newMember = new Member(null, finalEmail, hashedPassword, Role.USER, nickname, profileImageUrl);
                 return memberRepository.save(newMember);
             });
     }

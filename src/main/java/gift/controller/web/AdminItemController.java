@@ -36,10 +36,12 @@ public class AdminItemController {
     @GetMapping
     public String listItems(
         @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
-        Model model
+        Model model,
+        @Login Member loginMember
     ) {
         Page<ItemResponse> itemPage = itemService.getAllItems(pageable);
         model.addAttribute("itemPage", itemPage);
+        model.addAttribute("loginMember", loginMember);
         return "admin/items/list";
     }
 
