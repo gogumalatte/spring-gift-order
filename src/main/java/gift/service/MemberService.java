@@ -47,13 +47,19 @@ public class MemberService {
         return new LoginResponse(token);
     }
 
+    @Transactional
     public Member loginOrRegister(KakaoUserInfoResponse userInfo) {
         String email = userInfo.getEmail();
-        return memberRepository.findByEmail(email)
+        if (email == null) {
+            email = userInfo.id() + "@kakao.temp.email";
+        }
+        final String finalEmail = email;
+
+        return memberRepository.findByEmail(finalEmail)
             .orElseGet(() -> {
                 String tempPassword = "kakao_temp_password";
                 String hashedPassword = BCrypt.hashpw(tempPassword, BCrypt.gensalt());
-                Member newMember = new Member(null, email, hashedPassword, Role.USER);
+                Member newMember = new Member(null, finalEmail, hashedPassword, Role.USER);
                 return memberRepository.save(newMember);
             });
     }
