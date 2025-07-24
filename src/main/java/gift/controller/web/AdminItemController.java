@@ -3,12 +3,11 @@ package gift.controller.web;
 import gift.dto.ItemRequest;
 import gift.dto.ItemResponse;
 import gift.dto.OptionRequest;
-import gift.login.Authenticated;
-import gift.service.ItemService;
 import gift.entity.Member;
+import gift.login.Authenticated;
 import gift.login.Login;
+import gift.service.ItemService;
 import jakarta.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +45,9 @@ public class AdminItemController {
 
     @GetMapping("/new")
     public String newItemForm(Model model) {
-        model.addAttribute("item", new ItemRequest(null, 0, null, new ArrayList<>()));
+        ItemRequest itemRequest = new ItemRequest();
+        itemRequest.setOptions(List.of(new OptionRequest()));
+        model.addAttribute("item", itemRequest);
         return "admin/items/form";
     }
 
@@ -61,7 +62,6 @@ public class AdminItemController {
         if (bindingResult.hasErrors()) {
             return "admin/items/form";
         }
-
         itemService.createItem(itemRequest, loginMember);
         redirectAttributes.addFlashAttribute("message", "상품이 성공적으로 등록되었습니다!");
         return "redirect:/admin/items";
@@ -81,14 +81,11 @@ public class AdminItemController {
     @GetMapping("/{id}/edit")
     public String editItemForm(@PathVariable("id") Long id, Model model) {
         ItemResponse item = itemService.getItemById(id);
-
         List<OptionRequest> optionRequests = item.options().stream()
             .map(optionResponse -> new OptionRequest(optionResponse.name(), optionResponse.quantity()))
             .toList();
-
         model.addAttribute("item",
             new ItemRequest(item.name(), item.price(), item.imageUrl(), optionRequests));
-
         model.addAttribute("itemId", id);
         return "admin/items/form";
     }
@@ -100,9 +97,11 @@ public class AdminItemController {
         @Valid @ModelAttribute("item") ItemRequest itemRequest,
         BindingResult bindingResult,
         @Login Member loginMember,
-        RedirectAttributes redirectAttributes
+        RedirectAttributes redirectAttributes,
+        Model model
     ) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("itemId", id);
             return "admin/items/form";
         }
         itemService.updateItem(id, itemRequest, loginMember);
@@ -114,11 +113,9 @@ public class AdminItemController {
     @PostMapping("/{id}/delete")
     public String deleteItem(
         @PathVariable("id") Long id,
-        @Login Member loginMember,
-        RedirectAttributes redirectAttributes
+        @Login Member loginMember
     ) {
         itemService.deleteItem(id, loginMember);
-        redirectAttributes.addFlashAttribute("message", "상품이 성공적으로 삭제되었습니다!");
         return "redirect:/admin/items";
     }
 
@@ -128,15 +125,13 @@ public class AdminItemController {
         @PathVariable("productId") Long productId,
         @Valid @ModelAttribute("option") OptionRequest optionRequest,
         BindingResult bindingResult,
-        Model model,
-        @Login Member loginMember
+        Model model
     ) {
         if (bindingResult.hasErrors()) {
             ItemResponse item = itemService.getItemById(productId);
             model.addAttribute("item", item);
             return "admin/items/detail";
         }
-
         itemService.addOptionToItem(productId, optionRequest);
         return "redirect:/admin/items/" + productId;
     }

@@ -9,35 +9,45 @@
 <div class="container">
   <h1 th:text="${itemId == null ? '새 상품 등록' : '상품 수정'}">상품 폼</h1>
 
-  <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+  <div th:if="${#fields.hasErrors()}" class="alert error">
+    <p th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+  </div>
 
-  <form th:action="${itemId == null ? '/admin/items' : '/admin/items/' + itemId}"
+  <form th:action="${itemId == null ? '/admin/items' : '/admin/items/' + itemId + '/update'}"
         th:object="${item}" method="post">
 
-    <input type="hidden" th:if="${itemId != null}" name="_method" value="put"/>
-
     <div class="form-group">
-      <label for="name">이름:</label>
+      <label for="name">상품 이름</label>
       <input type="text" id="name" th:field="*{name}" placeholder="상품 이름"/>
       <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></span>
     </div>
-
     <div class="form-group">
-      <label for="price">가격:</label>
-      <input type="number" id="price" th:field="*{price}" placeholder="상품 가격 (숫자)"/>
+      <label for="price">가격</label>
+      <input type="number" id="price" th:field="*{price}" placeholder="상품 가격"/>
       <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error-message"></span>
     </div>
+    <div class="form-group">
+      <label for="imageUrl">이미지 URL</label>
+      <input type="text" id="imageUrl" th:field="*{imageUrl}" placeholder="이미지 URL"/>
+      <span th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" class="error-message"></span>
+    </div>
+
+    <hr/>
+    <h3>기본 옵션 정보 (최소 1개 필수)</h3>
 
     <div class="form-group">
-      <label for="imageUrl">이미지 URL:</label>
-      <input type="text" id="imageUrl" th:field="*{imageUrl}" placeholder="이미지 URL"/>
-      <span th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"
-            class="error-message"></span>
+      <label for="optionName">옵션 이름</label>
+      <input type="text" id="optionName" th:field="*{options[0].name}" placeholder="옵션 이름"/>
+      <span th:if="${#fields.hasErrors('options[0].name')}" th:errors="*{options[0].name}" class="error-message"></span>
+    </div>
+    <div class="form-group">
+      <label for="optionQuantity">옵션 수량</label>
+      <input type="number" id="optionQuantity" th:field="*{options[0].quantity}" placeholder="옵션 수량"/>
+      <span th:if="${#fields.hasErrors('options[0].quantity')}" th:errors="*{options[0].quantity}" class="error-message"></span>
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="btn primary" th:text="${itemId == null ? '등록' : '수정'}">제출
-      </button>
+      <button type="submit" class="btn primary" th:text="${itemId == null ? '등록' : '수정'}">제출</button>
       <a href="/admin/items" class="btn secondary">목록으로</a>
     </div>
   </form>
