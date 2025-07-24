@@ -6,6 +6,9 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
   </head>
   <body>
+    <div class="user-info" th:if="${loginMember != null}">
+      <span th:text="|${loginMember.email}님 환영합니다!|"></span>
+    </div>
     <div class="container">
       <h1>상품 목록</h1>
 
