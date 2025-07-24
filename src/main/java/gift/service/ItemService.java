@@ -44,11 +44,12 @@ public class ItemService {
 
     @Transactional
     public ItemResponse createItem(ItemRequest request, Member loginMember) {
-        validateAdminRoleForKakaoKeyword(request.name(), loginMember);
-        Item item = new Item(null, request.name(), request.price(), request.imageUrl());
+        validateAdminRoleForKakaoKeyword(request.getName(), loginMember);
+
+        Item item = new Item(null, request.getName(), request.getPrice(), request.getImageUrl());
         Item savedItem = itemRepository.save(item);
 
-        List<Option> options = request.options().stream()
+        List<Option> options = request.getOptions().stream()
             .map(optionRequest -> optionRequest.toEntity(savedItem))
             .toList();
         optionRepository.saveAll(options);
@@ -58,11 +59,11 @@ public class ItemService {
 
     @Transactional
     public ItemResponse updateItem(Long id, ItemRequest request, Member loginMember) {
-        validateAdminRoleForKakaoKeyword(request.name(), loginMember);
+        validateAdminRoleForKakaoKeyword(request.getName(), loginMember);
         Item item = itemRepository.findById(id)
             .orElseThrow(() -> new ItemNotFoundException("수정할 상품을 찾을 수 없습니다: " + id));
 
-        item.updateInfo(request.name(), request.price(), request.imageUrl());
+        item.updateInfo(request.getName(), request.getPrice(), request.getImageUrl());
         return ItemResponse.from(item);
     }
 
@@ -91,12 +92,17 @@ public class ItemService {
             .collect(Collectors.toList());
     }
 
-    public void addOptionToItem(Long productId, OptionRequest optionRequest) {
+    @Transactional
+    public void addOptionToItem(Long productId, OptionRequest optionRequest, Member loginMember) {
         Item item = itemRepository.findById(productId)
             .orElseThrow(() -> new ItemNotFoundException("옵션을 추가할 상품을 찾을 수 없습니다: " + productId));
 
+        if (loginMember.getRole() != Role.ADMIN) {
+            throw new AuthorizationException("옵션을 추가할 권한이 없습니다.");
+        }
+
         boolean isDuplicate = item.getOptions().stream()
-            .anyMatch(option -> option.getName().equals(optionRequest.name()));
+            .anyMatch(option -> option.getName().equals(optionRequest.getName()));
         if (isDuplicate) {
             throw new IllegalArgumentException("동일한 이름의 옵션이 이미 존재합니다.");
         }
