@@ -23,8 +23,18 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor)
-            .addPathPatterns("/**")
-            .excludePathPatterns("/css/**", "/error");
+            .addPathPatterns("/api/**", "/admin/**")
+            .excludePathPatterns(
+                "/css/**", "/error",
+                "/api/members/register",
+                "/api/members/login",
+                "/members/register",
+                "/members/login",
+                "/oauth/kakao",
+                "/oauth/kakao/callback",
+                "/admin/items",
+                "/api/products"
+            );
     }
 
     @Override
