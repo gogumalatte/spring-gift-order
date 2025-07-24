@@ -15,13 +15,17 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class KakaoApiService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     @Value("${kakao.client.id}")
     private String clientId;
 
     @Value("${kakao.redirect.uri}")
     private String redirectUri;
+
+    public KakaoApiService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public String getAccessToken(String code) {
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
