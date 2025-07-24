@@ -5,25 +5,40 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import gift.validation.ValidProductName;
 import java.util.List;
 
-public record ItemRequest(
+public class ItemRequest {
 
-    @ValidProductName
-    @NotBlank(message = "상품 이름은 비어 있을 수 없습니다.")
-    String name,
+    @NotBlank
+    private String name;
 
-    @Min(value = 0, message = "가격은 0보다 작을 수 없습니다.")
-    @NotNull(message = "가격은 비어 있을 수 없습니다.")
-    int price,
+    @NotNull
+    @Min(0)
+    private int price;
 
-    @NotBlank(message = "이미지 URL은 비어 있을 수 없습니다.")
-    String imageUrl,
+    @NotBlank
+    private String imageUrl;
 
     @Valid
     @NotEmpty(message = "상품에는 최소 하나 이상의 옵션이 필요합니다.")
-    List<OptionRequest> options
-) {
+    private List<OptionRequest> options;
 
+    public ItemRequest() {
+    }
+
+    public ItemRequest(String name, int price, String imageUrl, List<OptionRequest> options) {
+        this.name = name;
+        this.price = price;
+        this.imageUrl = imageUrl;
+        this.options = options;
+    }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public int getPrice() { return price; }
+    public void setPrice(int price) { this.price = price; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public List<OptionRequest> getOptions() { return options; }
+    public void setOptions(List<OptionRequest> options) { this.options = options; }
 }

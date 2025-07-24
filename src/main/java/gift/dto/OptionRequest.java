@@ -9,17 +9,31 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record OptionRequest(
+public class OptionRequest {
+
     @NotBlank
-    @Size(max = 50, message = "옵션 이름은 최대 50자까지 입력할 수 있습니다.")
+    @Size(max = 50)
     @ValidOptionName
-    String name,
+    private String name;
 
     @NotNull
-    @Min(value = 1, message = "옵션 수량은 1개 이상이어야 합니다.")
-    @Max(value = 100_000_000, message = "옵션 수량은 1억 개 미만이어야 합니다.")
-    int quantity
-) {
+    @Min(value = 1)
+    @Max(value = 100_000_000)
+    private int quantity;
+
+    public OptionRequest() {
+    }
+
+    public OptionRequest(String name, int quantity) {
+        this.name = name;
+        this.quantity = quantity;
+    }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+
     public Option toEntity(Item item) {
         return new Option(name, quantity, item);
     }
