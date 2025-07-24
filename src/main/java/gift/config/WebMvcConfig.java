@@ -31,8 +31,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 "/members/register",
                 "/members/login",
                 "/oauth/kakao",
-                "/oauth/kakao/callback",
-                "/api/products"
+                "/oauth/kakao/callback"
             );
     }
 
