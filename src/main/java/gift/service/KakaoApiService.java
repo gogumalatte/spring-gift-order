@@ -1,19 +1,15 @@
 package gift.service;
 
+import gift.client.KakaoClient;
 import gift.dto.KakaoTokenResponse;
 import gift.dto.KakaoUserInfoResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClient;
 
 @Service
 public class KakaoApiService {
 
-    private final RestClient restClient;
+    private final KakaoClient kakaoClient;
 
     @Value("${kakao.client.id}")
     private String clientId;
@@ -21,8 +17,8 @@ public class KakaoApiService {
     @Value("${kakao.redirect.uri}")
     private String redirectUri;
 
-    public KakaoApiService(RestClient restClient) {
-        this.restClient = restClient;
+    public KakaoApiService(KakaoClient kakaoClient) {
+        this.kakaoClient = kakaoClient;
     }
 
     public KakaoUserInfoResponse processKakaoLogin(String code) {
@@ -31,20 +27,7 @@ public class KakaoApiService {
     }
 
     public String getAccessToken(String code) {
-        String tokenUrl = "https://kauth.kakao.com/oauth/token";
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", "authorization_code");
-        body.add("client_id", clientId);
-        body.add("redirect_uri", redirectUri);
-        body.add("code", code);
-
-        KakaoTokenResponse response = restClient.post()
-            .uri(tokenUrl)
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .body(body)
-            .retrieve()
-            .body(KakaoTokenResponse.class);
+        KakaoTokenResponse response = kakaoClient.fetchAccessToken(code, clientId, redirectUri);
 
         if (response == null) {
             throw new RuntimeException("카카오 토큰을 발급받는데 실패했습니다.");
@@ -53,13 +36,7 @@ public class KakaoApiService {
     }
 
     public KakaoUserInfoResponse getUserInfo(String accessToken) {
-        String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
-
-        KakaoUserInfoResponse response = restClient.get()
-            .uri(userInfoUrl)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-            .retrieve()
-            .body(KakaoUserInfoResponse.class);
+        KakaoUserInfoResponse response = kakaoClient.fetchUserInfo(accessToken);
         
         if (response == null) {
             throw new RuntimeException("카카오 사용자 정보를 가져오는데 실패했습니다.");
