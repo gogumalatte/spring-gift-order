@@ -19,20 +19,20 @@ public class OptionRequest {
     @NotNull
     @Min(value = 1)
     @Max(value = 100_000_000)
-    private int quantity;
+    private Integer quantity;
 
     public OptionRequest() {
     }
 
-    public OptionRequest(String name, int quantity) {
+    public OptionRequest(String name, Integer quantity) {
         this.name = name;
         this.quantity = quantity;
     }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
     public Option toEntity(Item item) {
         return new Option(name, quantity, item);
