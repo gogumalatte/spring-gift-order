@@ -48,7 +48,9 @@ public class AdminItemController {
 
     @GetMapping("/new")
     public String newItemForm(@ModelAttribute("item") ItemRequest itemRequest) {
-        itemRequest.setOptions(List.of(new OptionRequest(null, 1)));
+        if (itemRequest.getOptions() == null || itemRequest.getOptions().isEmpty()) {
+            itemRequest.setOptions(List.of(new OptionRequest(null, 1)));
+        }
         return "admin/items/form";
     }
 
