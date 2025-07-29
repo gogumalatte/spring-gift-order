@@ -29,8 +29,7 @@ class KakaoApiServiceTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(kakaoApiService, "clientId", "test-client-id");
-        ReflectionTestUtils.setField(kakaoApiService, "redirectUri", "http://localhost/callback");
+        kakaoApiService = new KakaoApiService(kakaoClient, "test-client-id", "http://localhost/callback");
     }
 
     @Test

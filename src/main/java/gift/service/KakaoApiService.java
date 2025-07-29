@@ -10,15 +10,17 @@ import org.springframework.stereotype.Service;
 public class KakaoApiService {
 
     private final KakaoClient kakaoClient;
+    private final String clientId;
+    private final String redirectUri;
 
-    @Value("${kakao.client.id}")
-    private String clientId;
-
-    @Value("${kakao.redirect.uri}")
-    private String redirectUri;
-
-    public KakaoApiService(KakaoClient kakaoClient) {
+    public KakaoApiService(
+        KakaoClient kakaoClient,
+        @Value("${kakao.client.id}") String clientId,
+        @Value("${kakao.redirect.uri}") String redirectUri
+    ) {
         this.kakaoClient = kakaoClient;
+        this.clientId = clientId;
+        this.redirectUri = redirectUri;
     }
 
     public KakaoUserInfoResponse processKakaoLogin(String code) {
@@ -37,7 +39,7 @@ public class KakaoApiService {
 
     public KakaoUserInfoResponse getUserInfo(String accessToken) {
         KakaoUserInfoResponse response = kakaoClient.fetchUserInfo(accessToken);
-        
+
         if (response == null) {
             throw new RuntimeException("카카오 사용자 정보를 가져오는데 실패했습니다.");
         }
