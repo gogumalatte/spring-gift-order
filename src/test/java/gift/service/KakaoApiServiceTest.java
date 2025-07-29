@@ -7,6 +7,8 @@ import static org.mockito.Mockito.mock;
 
 import gift.dto.KakaoTokenResponse;
 import gift.dto.KakaoUserInfoResponse;
+import gift.dto.KakaoUserInfoResponse.KakaoAccount;
+import gift.dto.KakaoUserInfoResponse.Properties;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +32,6 @@ class KakaoApiServiceTest {
 
     @Mock
     private RestClient restClient;
-
     @InjectMocks
     private KakaoApiService kakaoApiService;
 
@@ -66,9 +67,11 @@ class KakaoApiServiceTest {
     @Test
     @DisplayName("사용자 정보 받기 테스트")
     void getUserInfo() {
-        KakaoUserInfoResponse mockResponse = new KakaoUserInfoResponse(1L,
-            Map.of("email", "test@example.com"),
-            Map.of("nickname", "테스트유저"));
+        Properties properties = new Properties("테스트유저", "test.jpg", "thumb.jpg");
+        KakaoAccount.Profile profile = new KakaoAccount.Profile("테스트유저", "thumb.jpg", "test.jpg", false);
+        KakaoAccount kakaoAccount = new KakaoAccount(false, false, false, profile, false, true, true, "test@example.com");
+        KakaoUserInfoResponse mockResponse = new KakaoUserInfoResponse(1L, kakaoAccount, properties);
+
         String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
         String testAccessToken = "test-access-token";
 

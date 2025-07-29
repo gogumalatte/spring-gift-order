@@ -1,20 +1,25 @@
 package gift.controller.web;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import gift.config.WebMvcConfig;
 import gift.dto.KakaoUserInfoResponse;
+import gift.dto.KakaoUserInfoResponse.KakaoAccount;
+import gift.dto.KakaoUserInfoResponse.Properties;
 import gift.entity.Member;
 import gift.entity.Role;
-import gift.repository.MemberRepository;
+import gift.interceptor.AuthenticationInterceptor;
+import gift.login.LoggedInMemberArgumentResolver;
 import gift.service.KakaoApiService;
 import gift.service.MemberService;
 import gift.util.JwtUtil;
-import java.util.Map;
-import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +30,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(OAuthController.class)
-@Import(OAuthControllerTest.TestConfig.class)
+@Import({WebMvcConfig.class, OAuthControllerTest.TestConfig.class})
 class OAuthControllerTest {
 
     @Autowired
@@ -38,29 +43,49 @@ class OAuthControllerTest {
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
-    private MemberRepository memberRepository;
+    private AuthenticationInterceptor authenticationInterceptor;
+
+    private Member testMember;
+    private KakaoUserInfoResponse testUserInfo;
+    private String testJwtToken;
 
     @TestConfiguration
     static class TestConfig {
         @Bean
         public KakaoApiService kakaoApiService() {
-            return org.mockito.Mockito.mock(KakaoApiService.class);
+            return mock(KakaoApiService.class);
         }
 
         @Bean
         public MemberService memberService() {
-            return org.mockito.Mockito.mock(MemberService.class);
+            return mock(MemberService.class);
         }
 
         @Bean
         public JwtUtil jwtUtil() {
-            return org.mockito.Mockito.mock(JwtUtil.class);
+            return mock(JwtUtil.class);
         }
 
         @Bean
-        public MemberRepository memberRepository() {
-            return org.mockito.Mockito.mock(MemberRepository.class);
+        public AuthenticationInterceptor authenticationInterceptor() {
+            return mock(AuthenticationInterceptor.class);
         }
+
+        @Bean
+        public LoggedInMemberArgumentResolver loggedInMemberArgumentResolver() {
+            return mock(LoggedInMemberArgumentResolver.class);
+        }
+    }
+
+    @BeforeEach
+    void setUp() {
+        Properties properties = new Properties("테스트유저", "test.jpg", "thumb.jpg");
+        KakaoAccount.Profile profile = new KakaoAccount.Profile("테스트유저", "thumb.jpg", "test.jpg", false);
+        KakaoAccount kakaoAccount = new KakaoAccount(false, false, false, profile, false, true, true, "test@kakao.com");
+        testUserInfo = new KakaoUserInfoResponse(12345L, kakaoAccount, properties);
+
+        testMember = new Member(1L, "test@kakao.com", "password", Role.USER, "테스트유저", "test.jpg");
+        testJwtToken = "test_jwt_token";
     }
 
     @Test
@@ -68,23 +93,15 @@ class OAuthControllerTest {
     void kakaoCallback() throws Exception {
         String testAuthorizationCode = "test_code";
 
-        KakaoUserInfoResponse testUserInfo = new KakaoUserInfoResponse(12345L,
-            Map.of("email", "test@kakao.com"),
-            Map.of("nickname", "테스트유저", "profile_image", "test.jpg"));
-
-        Member testMember = new Member(1L, "test@kakao.com", "password", Role.USER, "테스트유저", "test.jpg");
-
-        String testAccessToken = "test_access_token";
-
         given(kakaoApiService.processKakaoLogin(testAuthorizationCode)).willReturn(testUserInfo);
         given(memberService.loginOrRegister(testUserInfo)).willReturn(testMember);
-        given(jwtUtil.createToken(testMember.getEmail(), testMember.getRole().name())).willReturn(testAccessToken);
-
-        given(memberRepository.findByEmail("test@kakao.com")).willReturn(Optional.of(testMember));
+        given(jwtUtil.createToken(any(), any())).willReturn(testJwtToken);
+        given(authenticationInterceptor.preHandle(any(), any(), any())).willReturn(true);
 
         mockMvc.perform(get("/oauth/kakao/callback").param("code", testAuthorizationCode))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/admin/items"))
-            .andExpect(cookie().value("accessToken", testAccessToken));
+            .andExpect(cookie().exists("accessToken"))
+            .andExpect(cookie().value("accessToken", testJwtToken));
     }
 }
