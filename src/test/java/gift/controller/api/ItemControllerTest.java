@@ -23,12 +23,20 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@TestPropertySource(properties = {
+    "jwt.secret.key=test-secret-key-for-member-controller-test",
+    "kakao.client.id=test_client_id",
+    "kakao.redirect.uri=test_redirect_uri",
+    "kakao.api.url.auth=https://kauth.kakao.com",
+    "kakao.api.url.api=https://kapi.kakao.com"
+})
 class ItemControllerTest {
 
     @Autowired
