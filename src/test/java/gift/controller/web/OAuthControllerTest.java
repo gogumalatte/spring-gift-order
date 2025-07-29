@@ -2,7 +2,6 @@ package gift.controller.web;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -24,58 +23,31 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(OAuthController.class)
-@Import({WebMvcConfig.class, OAuthControllerTest.TestConfig.class})
+@Import(WebMvcConfig.class)
 class OAuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockitoBean
     private KakaoApiService kakaoApiService;
-    @Autowired
+    @MockitoBean
     private MemberService memberService;
-    @Autowired
+    @MockitoBean
     private JwtUtil jwtUtil;
-    @Autowired
+    @MockitoBean
     private AuthenticationInterceptor authenticationInterceptor;
+    @MockitoBean
+    private LoggedInMemberArgumentResolver loggedInMemberArgumentResolver;
 
     private Member testMember;
     private KakaoUserInfoResponse testUserInfo;
     private String testJwtToken;
-
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public KakaoApiService kakaoApiService() {
-            return mock(KakaoApiService.class);
-        }
-
-        @Bean
-        public MemberService memberService() {
-            return mock(MemberService.class);
-        }
-
-        @Bean
-        public JwtUtil jwtUtil() {
-            return mock(JwtUtil.class);
-        }
-
-        @Bean
-        public AuthenticationInterceptor authenticationInterceptor() {
-            return mock(AuthenticationInterceptor.class);
-        }
-
-        @Bean
-        public LoggedInMemberArgumentResolver loggedInMemberArgumentResolver() {
-            return mock(LoggedInMemberArgumentResolver.class);
-        }
-    }
 
     @BeforeEach
     void setUp() {
