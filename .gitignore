@@ -38,6 +38,3 @@ out/
 
 ### Mac OS ###
 .DS_Store
-
-# OAuth properties
-application-oauth.properties
