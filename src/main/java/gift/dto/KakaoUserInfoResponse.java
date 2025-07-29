@@ -1,12 +1,14 @@
 package gift.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.Map;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record KakaoUserInfoResponse(
     Long id,
-    @JsonProperty("kakao_account") Map<String, Object> kakaoAccount,
-    @JsonProperty("properties") Map<String, String> properties
+    Map<String, Object> kakaoAccount,
+    Map<String, String> properties
 ) {
     public String getEmail() {
         if (kakaoAccount != null && kakaoAccount.containsKey("email")) {
