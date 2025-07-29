@@ -43,8 +43,7 @@ public class OAuthController {
 
     @GetMapping("/kakao/callback")
     public String kakaoCallback(@RequestParam("code") String code, HttpServletResponse response) {
-        String accessToken = kakaoApiService.getAccessToken(code);
-        KakaoUserInfoResponse userInfo = kakaoApiService.getUserInfo(accessToken);
+        KakaoUserInfoResponse userInfo = kakaoApiService.processKakaoLogin(code);
 
         Member member = memberService.loginOrRegister(userInfo);
 

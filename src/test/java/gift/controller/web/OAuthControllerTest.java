@@ -77,8 +77,7 @@ class OAuthControllerTest {
 
         String testJwtToken = "test_jwt_token";
 
-        given(kakaoApiService.getAccessToken(testAuthorizationCode)).willReturn(testAccessToken);
-        given(kakaoApiService.getUserInfo(testAccessToken)).willReturn(testUserInfo);
+        given(kakaoApiService.processKakaoLogin(testAuthorizationCode)).willReturn(testUserInfo);
         given(memberService.loginOrRegister(testUserInfo)).willReturn(testMember);
         given(jwtUtil.createToken(testMember.getEmail(), testMember.getRole().name())).willReturn(testJwtToken);
 

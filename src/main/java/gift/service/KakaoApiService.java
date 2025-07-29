@@ -25,6 +25,11 @@ public class KakaoApiService {
         this.restClient = restClient;
     }
 
+    public KakaoUserInfoResponse processKakaoLogin(String code) {
+        String accessToken = getAccessToken(code);
+        return getUserInfo(accessToken);
+    }
+
     public String getAccessToken(String code) {
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
 
