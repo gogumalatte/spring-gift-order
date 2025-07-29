@@ -1,7 +1,7 @@
 package gift.config;
 
 import gift.interceptor.AuthenticationInterceptor;
-import gift.login.LoginMemberArgumentResolver;
+import gift.login.LoggedInMemberArgumentResolver;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -12,12 +12,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final AuthenticationInterceptor authenticationInterceptor;
-    private final LoginMemberArgumentResolver loginMemberArgumentResolver;
+    private final LoggedInMemberArgumentResolver loggedInMemberArgumentResolver;
 
     public WebMvcConfig(AuthenticationInterceptor authenticationInterceptor,
-        LoginMemberArgumentResolver loginMemberArgumentResolver) {
+        LoggedInMemberArgumentResolver loggedInMemberArgumentResolver) {
         this.authenticationInterceptor = authenticationInterceptor;
-        this.loginMemberArgumentResolver = loginMemberArgumentResolver;
+        this.loggedInMemberArgumentResolver = loggedInMemberArgumentResolver;
     }
 
     @Override
@@ -37,6 +37,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(loginMemberArgumentResolver);
+        resolvers.add(loggedInMemberArgumentResolver);
     }
 }

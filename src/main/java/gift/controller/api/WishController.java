@@ -5,7 +5,7 @@ import gift.dto.WishResponse;
 import gift.dto.WishUpdateRequest;
 import gift.entity.Member;
 import gift.login.Authenticated;
-import gift.login.Login;
+import gift.login.LoggedInMember;
 import gift.service.WishService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -36,7 +36,7 @@ public class WishController {
 
     @GetMapping
     public ResponseEntity<Slice<WishResponse>> getWishes(
-        @Login Member member,
+        @LoggedInMember Member member,
         @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         Slice<WishResponse> wishes = wishService.getWishes(member, pageable);
@@ -44,7 +44,7 @@ public class WishController {
     }
 
     @PostMapping
-    public ResponseEntity<WishResponse> addWish(@Valid @RequestBody WishRequest request, @Login Member member) {
+    public ResponseEntity<WishResponse> addWish(@Valid @RequestBody WishRequest request, @LoggedInMember Member member) {
         WishResponse newWish = wishService.addWish(request, member);
         URI location = URI.create("/api/wishes/" + newWish.wishId());
         return ResponseEntity.created(location).body(newWish);
@@ -54,7 +54,7 @@ public class WishController {
     public ResponseEntity<Void> updateWishQuantity(
         @PathVariable("wishId") Long wishId,
         @Valid @RequestBody WishUpdateRequest request,
-        @Login Member loginMember
+        @LoggedInMember Member loginMember
     ) {
         wishService.updateWishQuantity(wishId, request.quantity(), loginMember);
         return ResponseEntity.ok().build();
@@ -63,7 +63,7 @@ public class WishController {
     @DeleteMapping("/{wishId}")
     public ResponseEntity<Void> deleteWish(
         @PathVariable("wishId") Long wishId,
-        @Login Member loginMember
+        @LoggedInMember Member loginMember
     ) {
         wishService.deleteWish(wishId, loginMember);
         return ResponseEntity.noContent().build();

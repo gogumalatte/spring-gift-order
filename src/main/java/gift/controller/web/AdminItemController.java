@@ -5,7 +5,7 @@ import gift.dto.ItemResponse;
 import gift.dto.OptionRequest;
 import gift.entity.Member;
 import gift.login.Authenticated;
-import gift.login.Login;
+import gift.login.LoggedInMember;
 import gift.service.ItemService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -38,7 +38,7 @@ public class AdminItemController {
     public String listItems(
         @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
         Model model,
-        @Login Member loginMember
+        @LoggedInMember Member loginMember
     ) {
         Slice<ItemResponse> itemSlice = itemService.getAllItems(pageable);
         model.addAttribute("itemSlice", itemSlice);
@@ -57,7 +57,7 @@ public class AdminItemController {
     public String createItem(
         @Valid @ModelAttribute("item") ItemRequest itemRequest,
         BindingResult bindingResult,
-        @Login Member loginMember,
+        @LoggedInMember Member loginMember,
         RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
@@ -97,7 +97,7 @@ public class AdminItemController {
         @PathVariable("id") Long id,
         @Valid @ModelAttribute("item") ItemRequest itemRequest,
         BindingResult bindingResult,
-        @Login Member loginMember,
+        @LoggedInMember Member loginMember,
         RedirectAttributes redirectAttributes,
         Model model
     ) {
@@ -114,7 +114,7 @@ public class AdminItemController {
     @PostMapping("/{id}/delete")
     public String deleteItem(
         @PathVariable("id") Long id,
-        @Login Member loginMember
+        @LoggedInMember Member loginMember
     ) {
         itemService.deleteItem(id, loginMember);
         return "redirect:/admin/items";
@@ -126,7 +126,7 @@ public class AdminItemController {
         @PathVariable("productId") Long productId,
         @Valid @ModelAttribute("option") OptionRequest optionRequest,
         BindingResult bindingResult,
-        @Login Member loginMember,
+        @LoggedInMember Member loginMember,
         Model model
     ) {
         if (bindingResult.hasErrors()) {

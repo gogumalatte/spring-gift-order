@@ -1,6 +1,5 @@
 package gift.login;
 
-import gift.entity.Member;
 import gift.repository.MemberRepository;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -10,17 +9,17 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
-public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoggedInMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberRepository memberRepository;
 
-    public LoginMemberArgumentResolver(MemberRepository memberRepository) {
+    public LoggedInMemberArgumentResolver(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(Login.class);
+        return parameter.hasParameterAnnotation(LoggedInMember.class);
     }
 
     @Override

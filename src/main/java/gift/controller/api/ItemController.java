@@ -5,7 +5,7 @@ import gift.dto.ItemResponse;
 import gift.dto.OptionResponse;
 import gift.entity.Member;
 import gift.login.Authenticated;
-import gift.login.Login;
+import gift.login.LoggedInMember;
 import gift.service.ItemService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -37,7 +37,7 @@ public class ItemController {
 
     @Authenticated
     @PostMapping
-    public ResponseEntity<ItemResponse> createItem(@Valid @RequestBody ItemRequest request, @Login Member loginMember) {
+    public ResponseEntity<ItemResponse> createItem(@Valid @RequestBody ItemRequest request, @LoggedInMember Member loginMember) {
         ItemResponse newItem = itemService.createItem(request, loginMember);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
@@ -64,7 +64,7 @@ public class ItemController {
     @Authenticated
     @PutMapping("/{productId}")
     public ResponseEntity<ItemResponse> updateItem(@PathVariable("productId") Long id,
-        @RequestBody ItemRequest request, @Login Member loginMember) {
+        @RequestBody ItemRequest request, @LoggedInMember Member loginMember) {
         ItemResponse updatedItem = itemService.updateItem(id, request, loginMember);
         return ResponseEntity.ok(updatedItem);
     }
@@ -73,7 +73,7 @@ public class ItemController {
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteItem(
         @PathVariable("productId") Long id,
-        @Login Member loginMember
+        @LoggedInMember Member loginMember
     ) {
         itemService.deleteItem(id, loginMember);
         return ResponseEntity.noContent().build();
