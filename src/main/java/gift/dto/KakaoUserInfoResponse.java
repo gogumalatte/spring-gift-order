@@ -9,6 +9,7 @@ public record KakaoUserInfoResponse(
     KakaoAccount kakaoAccount,
     Properties properties
 ) {
+
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record Properties(
         String nickname,
@@ -44,10 +45,19 @@ public record KakaoUserInfoResponse(
     }
 
     public String getNickname() {
+        if (kakaoAccount != null && kakaoAccount.profile() != null && kakaoAccount.profile().nickname() != null) {
+            return kakaoAccount.profile().nickname();
+        }
         return properties != null ? properties.nickname() : null;
     }
 
     public String getProfileImageUrl() {
-        return properties != null ? properties.profileImageUrl() : null;
+        if (kakaoAccount != null && kakaoAccount.profile() != null && kakaoAccount.profile().profileImageUrl() != null) {
+            return kakaoAccount.profile().profileImageUrl();
+        }
+        if (properties != null && properties.profileImageUrl() != null) {
+            return properties.profileImageUrl();
+        }
+        return null;
     }
 }
