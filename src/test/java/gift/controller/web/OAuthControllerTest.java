@@ -67,7 +67,6 @@ class OAuthControllerTest {
     @DisplayName("카카오 로그인 콜백 성공 테스트")
     void kakaoCallback() throws Exception {
         String testAuthorizationCode = "test_code";
-        String testAccessToken = "test_access_token";
 
         KakaoUserInfoResponse testUserInfo = new KakaoUserInfoResponse(12345L,
             Map.of("email", "test@kakao.com"),
@@ -75,17 +74,17 @@ class OAuthControllerTest {
 
         Member testMember = new Member(1L, "test@kakao.com", "password", Role.USER, "테스트유저", "test.jpg");
 
-        String testJwtToken = "test_jwt_token";
+        String testAccessToken = "test_access_token";
 
         given(kakaoApiService.processKakaoLogin(testAuthorizationCode)).willReturn(testUserInfo);
         given(memberService.loginOrRegister(testUserInfo)).willReturn(testMember);
-        given(jwtUtil.createToken(testMember.getEmail(), testMember.getRole().name())).willReturn(testJwtToken);
+        given(jwtUtil.createToken(testMember.getEmail(), testMember.getRole().name())).willReturn(testAccessToken);
 
         given(memberRepository.findByEmail("test@kakao.com")).willReturn(Optional.of(testMember));
 
         mockMvc.perform(get("/oauth/kakao/callback").param("code", testAuthorizationCode))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/admin/items"))
-            .andExpect(cookie().value("jwt-token", testJwtToken));
+            .andExpect(cookie().value("accessToken", testAccessToken));
     }
 }

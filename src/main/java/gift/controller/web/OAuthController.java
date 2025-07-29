@@ -48,7 +48,7 @@ public class OAuthController {
         Member member = memberService.loginOrRegister(userInfo);
 
         String token = jwtUtil.createToken(member.getEmail(), member.getRole().name());
-        Cookie cookie = new Cookie("jwt-token", token);
+        Cookie cookie = new Cookie("accessToken", token);
         cookie.setPath("/");
         cookie.setMaxAge(3600);
         response.addCookie(cookie);

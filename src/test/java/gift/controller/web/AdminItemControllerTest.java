@@ -37,7 +37,7 @@ class AdminItemControllerTest {
     @BeforeEach
     void setUp() {
         String token = memberService.login(new MemberLoginRequest("admin@example.com", "admin1234")).token();
-        adminCookie = new Cookie("jwt-token", token);
+        adminCookie = new Cookie("accessToken", token);
         adminCookie.setPath("/");
         testItem = itemRepository.save(new Item(null, "사전 등록 상품", 20000, "before.jpg"));
     }

@@ -45,7 +45,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             return null;
         }
         return Arrays.stream(request.getCookies())
-            .filter(cookie -> "jwt-token".equals(cookie.getName()))
+            .filter(cookie -> "accessToken".equals(cookie.getName()))
             .findFirst()
             .map(Cookie::getValue)
             .orElse(null);
