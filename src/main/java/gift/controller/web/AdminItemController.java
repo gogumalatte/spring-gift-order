@@ -3,15 +3,14 @@ package gift.controller.web;
 import gift.dto.ItemRequest;
 import gift.dto.ItemResponse;
 import gift.dto.OptionRequest;
-import gift.login.Authenticated;
-import gift.service.ItemService;
 import gift.entity.Member;
-import gift.login.Login;
+import gift.login.Authenticated;
+import gift.login.LoggedInMember;
+import gift.service.ItemService;
 import jakarta.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
@@ -26,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin/items")
+@Authenticated
 public class AdminItemController {
 
     private final ItemService itemService;
@@ -37,16 +37,20 @@ public class AdminItemController {
     @GetMapping
     public String listItems(
         @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
-        Model model
+        Model model,
+        @LoggedInMember Member loginMember
     ) {
-        Page<ItemResponse> itemPage = itemService.getAllItems(pageable);
-        model.addAttribute("itemPage", itemPage);
+        Slice<ItemResponse> itemSlice = itemService.getAllItems(pageable);
+        model.addAttribute("itemSlice", itemSlice);
+        model.addAttribute("loginMember", loginMember);
         return "admin/items/list";
     }
 
     @GetMapping("/new")
-    public String newItemForm(Model model) {
-        model.addAttribute("item", new ItemRequest(null, 0, null, new ArrayList<>()));
+    public String newItemForm(@ModelAttribute("item") ItemRequest itemRequest) {
+        if (itemRequest.getOptions() == null || itemRequest.getOptions().isEmpty()) {
+            itemRequest.setOptions(List.of(new OptionRequest(null, 1)));
+        }
         return "admin/items/form";
     }
 
@@ -55,13 +59,12 @@ public class AdminItemController {
     public String createItem(
         @Valid @ModelAttribute("item") ItemRequest itemRequest,
         BindingResult bindingResult,
-        @Login Member loginMember,
+        @LoggedInMember Member loginMember,
         RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
             return "admin/items/form";
         }
-
         itemService.createItem(itemRequest, loginMember);
         redirectAttributes.addFlashAttribute("message", "상품이 성공적으로 등록되었습니다!");
         return "redirect:/admin/items";
@@ -81,14 +84,11 @@ public class AdminItemController {
     @GetMapping("/{id}/edit")
     public String editItemForm(@PathVariable("id") Long id, Model model) {
         ItemResponse item = itemService.getItemById(id);
-
         List<OptionRequest> optionRequests = item.options().stream()
             .map(optionResponse -> new OptionRequest(optionResponse.name(), optionResponse.quantity()))
             .toList();
-
         model.addAttribute("item",
             new ItemRequest(item.name(), item.price(), item.imageUrl(), optionRequests));
-
         model.addAttribute("itemId", id);
         return "admin/items/form";
     }
@@ -99,10 +99,12 @@ public class AdminItemController {
         @PathVariable("id") Long id,
         @Valid @ModelAttribute("item") ItemRequest itemRequest,
         BindingResult bindingResult,
-        @Login Member loginMember,
-        RedirectAttributes redirectAttributes
+        @LoggedInMember Member loginMember,
+        RedirectAttributes redirectAttributes,
+        Model model
     ) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("itemId", id);
             return "admin/items/form";
         }
         itemService.updateItem(id, itemRequest, loginMember);
@@ -114,11 +116,9 @@ public class AdminItemController {
     @PostMapping("/{id}/delete")
     public String deleteItem(
         @PathVariable("id") Long id,
-        @Login Member loginMember,
-        RedirectAttributes redirectAttributes
+        @LoggedInMember Member loginMember
     ) {
         itemService.deleteItem(id, loginMember);
-        redirectAttributes.addFlashAttribute("message", "상품이 성공적으로 삭제되었습니다!");
         return "redirect:/admin/items";
     }
 
@@ -128,8 +128,8 @@ public class AdminItemController {
         @PathVariable("productId") Long productId,
         @Valid @ModelAttribute("option") OptionRequest optionRequest,
         BindingResult bindingResult,
-        Model model,
-        @Login Member loginMember
+        @LoggedInMember Member loginMember,
+        Model model
     ) {
         if (bindingResult.hasErrors()) {
             ItemResponse item = itemService.getItemById(productId);
@@ -137,7 +137,7 @@ public class AdminItemController {
             return "admin/items/detail";
         }
 
-        itemService.addOptionToItem(productId, optionRequest);
+        itemService.addOptionToItem(productId, optionRequest, loginMember);
         return "redirect:/admin/items/" + productId;
     }
 }

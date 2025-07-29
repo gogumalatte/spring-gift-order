@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WishRepository extends JpaRepository<Wish, Long> {
 
-    @EntityGraph(attributePaths = {"product"})
+    @EntityGraph(attributePaths = {"product", "product.options"})
     Slice<Wish> findAllByMember(Member member, Pageable pageable);
 
     Optional<Wish> findByMemberAndProduct(Member member, Item product);

@@ -31,7 +31,7 @@ class WishRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        testMember = memberRepository.save(new Member(null, "test@example.com", "123", Role.USER));
+        testMember = memberRepository.save(new Member(null, "test@example.com", "123", Role.USER, null, null));
         testItem = itemRepository.save(new Item(null, "test item", 100, "test.jpg"));
     }
 

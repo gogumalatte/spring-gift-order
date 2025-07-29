@@ -47,7 +47,7 @@ public class WebMemberController {
         LoginResponse loginResponse = memberService.login(request);
         String token = loginResponse.token();
 
-        Cookie cookie = new Cookie("jwt-token", token);
+        Cookie cookie = new Cookie("accessToken", token);
         cookie.setPath("/");
         cookie.setMaxAge(3600);
         cookie.setHttpOnly(true);

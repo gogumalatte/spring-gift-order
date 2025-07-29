@@ -9,7 +9,9 @@ CREATE TABLE members (
                          id          BIGINT          PRIMARY KEY AUTO_INCREMENT,
                          email       VARCHAR(255)    NOT NULL UNIQUE,
                          password    VARCHAR(255)    NOT NULL,
-                         role        VARCHAR(50)     NOT NULL
+                         role        VARCHAR(50)     NOT NULL,
+                         nickname VARCHAR(255),
+                         profile_image_url VARCHAR(255)
 );
 
 CREATE TABLE wishes (

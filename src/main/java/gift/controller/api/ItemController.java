@@ -5,13 +5,13 @@ import gift.dto.ItemResponse;
 import gift.dto.OptionResponse;
 import gift.entity.Member;
 import gift.login.Authenticated;
-import gift.login.Login;
+import gift.login.LoggedInMember;
 import gift.service.ItemService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ public class ItemController {
 
     @Authenticated
     @PostMapping
-    public ResponseEntity<ItemResponse> createItem(@Valid @RequestBody ItemRequest request, @Login Member loginMember) {
+    public ResponseEntity<ItemResponse> createItem(@Valid @RequestBody ItemRequest request, @LoggedInMember Member loginMember) {
         ItemResponse newItem = itemService.createItem(request, loginMember);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")
@@ -54,17 +54,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ItemResponse>> getAllItems(
+    public ResponseEntity<Slice<ItemResponse>> getAllItems(
         @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        Page<ItemResponse> itemPage = itemService.getAllItems(pageable);
-        return ResponseEntity.ok(itemPage);
+        Slice<ItemResponse> itemSlice = itemService.getAllItems(pageable);
+        return ResponseEntity.ok(itemSlice);
     }
 
     @Authenticated
     @PutMapping("/{productId}")
     public ResponseEntity<ItemResponse> updateItem(@PathVariable("productId") Long id,
-        @RequestBody ItemRequest request, @Login Member loginMember) {
+        @RequestBody ItemRequest request, @LoggedInMember Member loginMember) {
         ItemResponse updatedItem = itemService.updateItem(id, request, loginMember);
         return ResponseEntity.ok(updatedItem);
     }
@@ -73,7 +73,7 @@ public class ItemController {
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteItem(
         @PathVariable("productId") Long id,
-        @Login Member loginMember
+        @LoggedInMember Member loginMember
     ) {
         itemService.deleteItem(id, loginMember);
         return ResponseEntity.noContent().build();

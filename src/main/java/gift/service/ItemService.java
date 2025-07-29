@@ -14,8 +14,8 @@ import gift.repository.ItemRepository;
 import gift.repository.OptionRepository;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +31,9 @@ public class ItemService {
         this.optionRepository = optionRepository;
     }
 
-    public Page<ItemResponse> getAllItems(Pageable pageable) {
-        Page<Item> itemPage = itemRepository.findAll(pageable);
-        return itemPage.map(ItemResponse::from);
+    public Slice<ItemResponse> getAllItems(Pageable pageable) {
+        Slice<Item> itemSlice = itemRepository.findSliceBy(pageable);
+        return itemSlice.map(ItemResponse::from);
     }
 
     public ItemResponse getItemById(Long id) {
@@ -44,25 +44,32 @@ public class ItemService {
 
     @Transactional
     public ItemResponse createItem(ItemRequest request, Member loginMember) {
-        validateAdminRoleForKakaoKeyword(request.name(), loginMember);
-        Item item = new Item(null, request.name(), request.price(), request.imageUrl());
+        validateAdminRoleForKakaoKeyword(request.getName(), loginMember);
+        Item item = new Item(null, request.getName(), request.getPrice(), request.getImageUrl());
         Item savedItem = itemRepository.save(item);
-
-        List<Option> options = request.options().stream()
+        List<Option> options = request.getOptions().stream()
             .map(optionRequest -> optionRequest.toEntity(savedItem))
             .toList();
         optionRepository.saveAll(options);
-
+        savedItem.getOptions().addAll(options);
         return ItemResponse.from(savedItem);
     }
 
     @Transactional
     public ItemResponse updateItem(Long id, ItemRequest request, Member loginMember) {
-        validateAdminRoleForKakaoKeyword(request.name(), loginMember);
+        validateAdminRoleForKakaoKeyword(request.getName(), loginMember);
         Item item = itemRepository.findById(id)
             .orElseThrow(() -> new ItemNotFoundException("수정할 상품을 찾을 수 없습니다: " + id));
 
-        item.updateInfo(request.name(), request.price(), request.imageUrl());
+        item.updateInfo(request.getName(), request.getPrice(), request.getImageUrl());
+
+        item.getOptions().clear();
+
+        List<Option> newOptions = request.getOptions().stream()
+            .map(optionRequest -> optionRequest.toEntity(item))
+            .toList();
+        item.getOptions().addAll(newOptions);
+
         return ItemResponse.from(item);
     }
 
@@ -91,12 +98,17 @@ public class ItemService {
             .collect(Collectors.toList());
     }
 
-    public void addOptionToItem(Long productId, OptionRequest optionRequest) {
+    @Transactional
+    public void addOptionToItem(Long productId, OptionRequest optionRequest, Member loginMember) {
         Item item = itemRepository.findById(productId)
             .orElseThrow(() -> new ItemNotFoundException("옵션을 추가할 상품을 찾을 수 없습니다: " + productId));
 
+        if (loginMember.getRole() != Role.ADMIN) {
+            throw new AuthorizationException("옵션을 추가할 권한이 없습니다.");
+        }
+
         boolean isDuplicate = item.getOptions().stream()
-            .anyMatch(option -> option.getName().equals(optionRequest.name()));
+            .anyMatch(option -> option.getName().equals(optionRequest.getName()));
         if (isDuplicate) {
             throw new IllegalArgumentException("동일한 이름의 옵션이 이미 존재합니다.");
         }

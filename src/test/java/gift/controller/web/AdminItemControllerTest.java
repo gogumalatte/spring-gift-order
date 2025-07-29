@@ -1,11 +1,8 @@
 package gift.controller.web;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import gift.dto.MemberLoginRequest;
 import gift.entity.Item;
@@ -19,12 +16,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@TestPropertySource(properties = {
+    "jwt.secret.key=test-secret-key-for-member-controller-test",
+    "kakao.client.id=test_client_id",
+    "kakao.redirect.uri=test_redirect_uri",
+    "kakao.api.url.auth=https://kauth.kakao.com",
+    "kakao.api.url.api=https://kapi.kakao.com"
+})
 class AdminItemControllerTest {
 
     @Autowired
@@ -40,9 +45,8 @@ class AdminItemControllerTest {
     @BeforeEach
     void setUp() {
         String token = memberService.login(new MemberLoginRequest("admin@example.com", "admin1234")).token();
-        adminCookie = new Cookie("jwt-token", token);
+        adminCookie = new Cookie("accessToken", token);
         adminCookie.setPath("/");
-
         testItem = itemRepository.save(new Item(null, "사전 등록 상품", 20000, "before.jpg"));
     }
 
@@ -62,18 +66,18 @@ class AdminItemControllerTest {
     }
 
     @Test
-    @DisplayName("관리자 페이지 - '카카오' 포함 상품 등록 성공 (ADMIN)")
-    void createKakaoItem_Success() throws Exception {
-        mockMvc.perform(post("/admin/items")
+    @DisplayName("관리자 페이지 - 상품 수정 성공")
+    void updateItem_Success() throws Exception {
+        mockMvc.perform(post("/admin/items/" + testItem.getId() + "/update")
                 .cookie(adminCookie)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("name", "카카오프렌즈 에디션")
-                .param("price", "50000")
-                .param("imageUrl", "kakao.jpg")
-                .param("options[0].name", "라이언")
-                .param("options[0].quantity", "10"))
+                .param("name", "수정된 상품")
+                .param("price", "9999")
+                .param("imageUrl", "updated.jpg")
+                .param("options[0].name", "수정된 옵션")
+                .param("options[0].quantity", "50"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/admin/items"));
+            .andExpect(redirectedUrl("/admin/items/" + testItem.getId()));
     }
 
     @Test

@@ -1,8 +1,9 @@
 package gift.service;
 
+import gift.dto.KakaoUserInfoResponse;
 import gift.dto.LoginResponse;
-import gift.dto.MemberRegisterRequest;
 import gift.dto.MemberLoginRequest;
+import gift.dto.MemberRegisterRequest;
 import gift.entity.Member;
 import gift.entity.Role;
 import gift.exception.LoginException;
@@ -27,7 +28,7 @@ public class MemberService {
     @Transactional
     public LoginResponse register(MemberRegisterRequest request) {
         String hashedPassword = BCrypt.hashpw(request.password(), BCrypt.gensalt());
-        Member newMember = new Member(null, request.email(), hashedPassword, Role.USER);
+        Member newMember = new Member(null, request.email(), hashedPassword, Role.USER, null, null);
         memberRepository.save(newMember);
 
         String token = jwtUtil.createToken(newMember.getEmail(), newMember.getRole().name());
@@ -37,12 +38,34 @@ public class MemberService {
     public LoginResponse login(MemberLoginRequest request) {
         Member member = memberRepository.findByEmail(request.email())
             .orElseThrow(() -> new LoginException("가입되지 않은 이메일입니다."));
-
         if (!BCrypt.checkpw(request.password(), member.getPassword())) {
             throw new LoginException("비밀번호가 일치하지 않습니다.");
         }
 
         String token = jwtUtil.createToken(member.getEmail(), member.getRole().name());
         return new LoginResponse(token);
+    }
+
+    @Transactional
+    public Member loginOrRegister(KakaoUserInfoResponse userInfo) {
+        String email = userInfo.getEmail();
+        if (email == null) {
+            email = userInfo.id() + "@kakao.temp.email";
+        }
+        String nickname = userInfo.getNickname();
+        String profileImageUrl = userInfo.getProfileImageUrl();
+
+        final String finalEmail = email;
+        return memberRepository.findByEmail(finalEmail)
+            .map(member -> {
+                member.updateProfile(nickname, profileImageUrl);
+                return member;
+            })
+            .orElseGet(() -> {
+                String tempPassword = "kakao_temp_password";
+                String hashedPassword = BCrypt.hashpw(tempPassword, BCrypt.gensalt());
+                Member newMember = new Member(null, finalEmail, hashedPassword, Role.USER, nickname, profileImageUrl);
+                return memberRepository.save(newMember);
+            });
     }
 }
