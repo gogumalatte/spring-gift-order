@@ -47,19 +47,19 @@ public class MemberService {
     }
 
     @Transactional
-    public Member loginOrRegister(KakaoUserInfoResponse userInfo) {
+    public Member loginOrRegister(KakaoUserInfoResponse userInfo, String accessToken) {
         String email = userInfo.getEmail();
         if (email == null) {
             email = userInfo.id() + "@kakao.temp.email";
         }
         String nickname = userInfo.getNickname();
         String profileImageUrl = userInfo.getProfileImageUrl();
-
         final String finalEmail = email;
-        return memberRepository.findByEmail(finalEmail)
-            .map(member -> {
-                member.updateProfile(nickname, profileImageUrl);
-                return member;
+
+        Member member = memberRepository.findByEmail(finalEmail)
+            .map(m -> {
+                m.updateProfile(nickname, profileImageUrl);
+                return m;
             })
             .orElseGet(() -> {
                 String tempPassword = "kakao_temp_password";
@@ -67,5 +67,7 @@ public class MemberService {
                 Member newMember = new Member(null, finalEmail, hashedPassword, Role.USER, nickname, profileImageUrl);
                 return memberRepository.save(newMember);
             });
+        member.updateKakaoAccessToken(accessToken);
+        return member;
     }
 }

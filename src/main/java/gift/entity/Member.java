@@ -33,6 +33,9 @@ public class Member {
     private String nickname;
     private String profileImageUrl;
 
+    @Column(length = 512)
+    private String kakaoAccessToken;
+
     protected Member() {
     }
 
@@ -50,10 +53,15 @@ public class Member {
         this.profileImageUrl = profileImageUrl;
     }
 
+    public void updateKakaoAccessToken(String kakaoAccessToken) {
+        this.kakaoAccessToken = kakaoAccessToken;
+    }
+
     public Long getId() { return id; }
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public Role getRole() { return role; }
     public String getNickname() { return nickname; }
     public String getProfileImageUrl() { return profileImageUrl; }
+    public String getKakaoAccessToken() { return kakaoAccessToken; }
 }

@@ -25,7 +25,8 @@ public class KakaoApiService {
 
     public KakaoUserInfoResponse processKakaoLogin(String code) {
         String accessToken = getAccessToken(code);
-        return getUserInfo(accessToken);
+        // return getUserInfo(accessToken);
+        throw new UnsupportedOperationException("This method is deprecated. Use getAccessToken and getUserInfo separately.");
     }
 
     public String getAccessToken(String code) {
