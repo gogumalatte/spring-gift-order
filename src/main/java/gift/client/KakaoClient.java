@@ -45,4 +45,14 @@ public class KakaoClient {
             .retrieve()
             .body(KakaoUserInfoResponse.class);
     }
+
+    public void sendKakaoTalkMessage(String accessToken, MultiValueMap<String, String> body) {
+        kakaoApiClient.post()
+            .uri("/v2/api/talk/memo/default/send")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .body(body)
+            .retrieve()
+            .toBodilessEntity();
+    }
 }
