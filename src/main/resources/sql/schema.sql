@@ -31,3 +31,15 @@ CREATE TABLE options (
                          product_id  BIGINT          NOT NULL,
                          FOREIGN KEY (product_id) REFERENCES products(id)
 );
+
+CREATE TABLE orders
+(
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id       BIGINT       NOT NULL,
+    option_id       BIGINT       NOT NULL,
+    quantity        INT          NOT NULL,
+    order_date_time DATETIME     NOT NULL,
+    message         TEXT,
+    FOREIGN KEY (member_id) REFERENCES members (id),
+    FOREIGN KEY (option_id) REFERENCES options (id)
+);
