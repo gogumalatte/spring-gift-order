@@ -31,8 +31,8 @@ public class MemberService {
         Member newMember = new Member(null, request.email(), hashedPassword, Role.USER, null, null);
         memberRepository.save(newMember);
 
-        String token = jwtUtil.createToken(newMember.getEmail(), newMember.getRole().name());
-        return new LoginResponse(token);
+        String accessToken = jwtUtil.createToken(newMember.getEmail(), newMember.getRole().name());
+        return new LoginResponse(accessToken);
     }
 
     public LoginResponse login(MemberLoginRequest request) {
@@ -42,8 +42,8 @@ public class MemberService {
             throw new LoginException("비밀번호가 일치하지 않습니다.");
         }
 
-        String token = jwtUtil.createToken(member.getEmail(), member.getRole().name());
-        return new LoginResponse(token);
+        String accessToken = jwtUtil.createToken(member.getEmail(), member.getRole().name());
+        return new LoginResponse(accessToken);
     }
 
     @Transactional
