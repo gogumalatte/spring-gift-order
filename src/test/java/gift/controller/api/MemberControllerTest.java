@@ -45,7 +45,7 @@ class MemberControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.token").exists());
+            .andExpect(jsonPath("$.accessToken").exists());
     }
 
     @Test
@@ -61,7 +61,7 @@ class MemberControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginSuccessRequest)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.token").exists());
+            .andExpect(jsonPath("$.accessToken").exists());
 
         MemberLoginRequest loginFailRequest = new MemberLoginRequest("login@example.com", "wrongpassword");
         mockMvc.perform(post("/api/members/login")

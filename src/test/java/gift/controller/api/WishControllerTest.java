@@ -68,7 +68,7 @@ class WishControllerTest {
     void setUp() {
         memberService.register(new MemberRegisterRequest("wish@example.com", "password"));
         LoginResponse loginResponse = memberService.login(new MemberLoginRequest("wish@example.com", "password"));
-        userToken = loginResponse.token();
+        userToken = loginResponse.accessToken();
         loginMember = memberRepository.findByEmail("wish@example.com").get();
 
         testItem1 = itemRepository.save(new Item(null, "테스트 상품 1", 10000, "test1.jpg"));
