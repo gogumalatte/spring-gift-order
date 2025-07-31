@@ -42,7 +42,7 @@ public class OrderService {
         wishRepository.findByMemberAndProduct(member, orderedItem)
             .ifPresent(wishRepository::delete);
 
-        if (member.getKakaoAccessToken() != null) {
+        if (member.isKakaoUser()) {
             kakaoApiService.sendMessageToMe(member.getKakaoAccessToken(), savedOrder);
         }
 
