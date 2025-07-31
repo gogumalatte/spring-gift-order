@@ -29,12 +29,6 @@ public class KakaoApiService {
         this.redirectUri = redirectUri;
     }
 
-    public KakaoUserInfoResponse processKakaoLogin(String code) {
-        String accessToken = getAccessToken(code);
-        // return getUserInfo(accessToken);
-        throw new UnsupportedOperationException("This method is deprecated. Use getAccessToken and getUserInfo separately.");
-    }
-
     public String getAccessToken(String code) {
         KakaoTokenResponse response = kakaoClient.fetchAccessToken(code, clientId, redirectUri);
 
