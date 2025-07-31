@@ -20,7 +20,7 @@ public class Order {
     private Option option;
 
     @Column(nullable = false)
-    private int quantity;
+    private Integer quantity;
 
     @Column(nullable = false)
     private LocalDateTime orderDateTime;
