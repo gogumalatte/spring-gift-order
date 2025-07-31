@@ -1,7 +1,7 @@
 package gift.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "orders")
@@ -23,7 +23,7 @@ public class Order {
     private Integer quantity;
 
     @Column(nullable = false)
-    private LocalDateTime orderDateTime;
+    private ZonedDateTime orderDateTime;
 
     @Lob
     private String message;
@@ -36,13 +36,13 @@ public class Order {
         this.option = option;
         this.quantity = quantity;
         this.message = message;
-        this.orderDateTime = LocalDateTime.now();
+        this.orderDateTime = ZonedDateTime.now();
     }
 
     public Long getId() { return id; }
     public Member getMember() { return member; }
     public Option getOption() { return option; }
     public int getQuantity() { return quantity; }
-    public LocalDateTime getOrderDateTime() { return orderDateTime; }
+    public ZonedDateTime getOrderDateTime() { return orderDateTime; }
     public String getMessage() { return message; }
 }
