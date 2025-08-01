@@ -22,7 +22,7 @@ CREATE TABLE wishes (
                         quantity    INT             NOT NULL DEFAULT 1,
                         FOREIGN KEY (member_id) REFERENCES members(id),
                         FOREIGN KEY (product_id) REFERENCES products(id),
-                        UNIQUE (member_id, product_id)
+                        CONSTRAINT UK_MEMBER_PRODUCT UNIQUE (member_id, product_id)
 );
 
 CREATE TABLE options (
