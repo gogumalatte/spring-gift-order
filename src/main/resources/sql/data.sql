@@ -20,18 +20,18 @@ INSERT INTO products (name, price, image_url) VALUES ('상품 14', 12000, 'img.j
 INSERT INTO products (name, price, image_url) VALUES ('상품 15', 13000, 'img.jpg');
 
 -- 옵션 초기 데이터
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 1);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 2);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 3);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 4);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 5);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 6);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 7);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 8);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 9);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 10);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 11);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 12);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 13);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 14);
-INSERT INTO options (name, quantity, product_id) VALUES ('기본', 100, 15);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 1, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 2, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 3, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 4, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 5, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 6, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 7, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 8, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 9, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 10, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 11, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 12, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 13, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 14, 0);
+INSERT INTO options (name, quantity, product_id, version) VALUES ('기본', 100, 15, 0);
