@@ -58,7 +58,7 @@ public class KakaoApiService {
                     order.getOption().getItem().getName(),
                     order.getOption().getName(),
                     order.getQuantity(),
-                    order.getMessage()
+                    order.getOrderMessage()
                 ),
                 "link", Map.of(
                     "web_url", "http://localhost:8080/admin/items",

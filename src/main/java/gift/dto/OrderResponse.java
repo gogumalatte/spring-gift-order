@@ -8,7 +8,7 @@ public record OrderResponse(
     Long optionId,
     int quantity,
     ZonedDateTime orderDateTime,
-    String message
+    String orderMessage
 ) {
     public static OrderResponse from(Order order) {
         return new OrderResponse(
@@ -16,7 +16,7 @@ public record OrderResponse(
             order.getOption().getId(),
             order.getQuantity(),
             order.getOrderDateTime(),
-            order.getMessage()
+            order.getOrderMessage()
         );
     }
 }

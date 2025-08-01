@@ -26,16 +26,16 @@ public class Order {
     private ZonedDateTime orderDateTime;
 
     @Lob
-    private String message;
+    private String orderMessage;
 
     protected Order() {
     }
 
-    public Order(Member member, Option option, int quantity, String message) {
+    public Order(Member member, Option option, int quantity, String orderMessage) {
         this.member = member;
         this.option = option;
         this.quantity = quantity;
-        this.message = message;
+        this.orderMessage = orderMessage;
         this.orderDateTime = ZonedDateTime.now();
     }
 
@@ -44,5 +44,5 @@ public class Order {
     public Option getOption() { return option; }
     public int getQuantity() { return quantity; }
     public ZonedDateTime getOrderDateTime() { return orderDateTime; }
-    public String getMessage() { return message; }
+    public String getOrderMessage() { return orderMessage; }
 }

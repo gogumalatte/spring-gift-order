@@ -35,7 +35,7 @@ public class OrderService {
 
         option.subtractQuantity(request.quantity());
 
-        Order order = new Order(member, option, request.quantity(), request.message());
+        Order order = new Order(member, option, request.quantity(), request.orderMessage());
         Order savedOrder = orderRepository.save(order);
 
         Item orderedItem = option.getItem();
