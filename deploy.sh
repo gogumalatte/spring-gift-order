@@ -1,15 +1,31 @@
-echo "> 배포를 시작합니다."
+REPOSITORY=/home/ubuntu
 
-BUILD_PATH=$(ls -t /home/ubuntu/build/libs/*.jar | head -n 1)
-JAR_NAME=$(basename $BUILD_PATH)
+echo "> 프로젝트 저장소로 이동합니다."
+cd $REPOSITORY
+
+echo "> Gradle 실행 권한을 추가합니다."
+chmod +x ./gradlew
+
+echo "> 프로젝트를 빌드합니다."
+./gradlew build
+
+echo "> 기존 build 폴더를 삭제합니다."
+rm -rf ~/build
+
+echo "> 신규 build 폴더를 생성하고 jar 파일을 복사합니다."
+mkdir ~/build
+cp $REPOSITORY/build/libs/*.jar ~/build/
+
+JAR_PATH=$(ls -tr ~/build/*.jar | tail -n 1)
+JAR_NAME=$(basename $JAR_PATH)
+
 echo "> 빌드 파일 이름: $JAR_NAME"
-echo "> 빌드 파일 경로: $BUILD_PATH"
+echo "> 빌드 파일 경로: $JAR_PATH"
 
 CURRENT_PID=$(pgrep -f $JAR_NAME)
 echo "> 현재 실행 중인 애플리케이션 PID: $CURRENT_PID"
 
-if [ -z $CURRENT_PID ]
-then
+if [ -z "$CURRENT_PID" ]; then
   echo "> 현재 구동 중인 애플리케이션이 없으므로 종료하지 않습니다."
 else
   echo "> kill -15 $CURRENT_PID"
@@ -17,17 +33,9 @@ else
   sleep 5
 fi
 
-DEPLOY_PATH=/home/ubuntu/
-DEPLOY_JAR=$DEPLOY_PATH$JAR_NAME
-
 echo "> 새 애플리케이션을 배포합니다."
-cp $BUILD_PATH $DEPLOY_PATH
+nohup java -jar \
+    -Dspring.profiles.active=prod \
+    $JAR_PATH > $REPOSITORY/log/deploy.log 2>&1 &
 
-LOG_PATH="/home/ubuntu/log"
-if [ ! -d "$LOG_PATH" ]; then
-  mkdir "$LOG_PATH"
-fi
-
-echo "> $DEPLOY_JAR 를 실행합니다."
-
-nohup java -jar -Dspring.profiles.active=prod $DEPLOY_JAR >> $LOG_PATH/deploy.log 2>&1 &
+echo "> 배포가 완료되었습니다."
