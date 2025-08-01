@@ -43,12 +43,12 @@ public class OAuthController {
 
     @GetMapping("/kakao/callback")
     public String kakaoCallback(@RequestParam("code") String code, HttpServletResponse response) {
-        KakaoUserInfoResponse userInfo = kakaoApiService.processKakaoLogin(code);
+        String kakaoAccessToken = kakaoApiService.getAccessToken(code);
+        KakaoUserInfoResponse userInfo = kakaoApiService.getUserInfo(kakaoAccessToken);
+        Member member = memberService.loginOrRegister(userInfo, kakaoAccessToken);
 
-        Member member = memberService.loginOrRegister(userInfo);
-
-        String token = jwtUtil.createToken(member.getEmail(), member.getRole().name());
-        Cookie cookie = new Cookie("accessToken", token);
+        String accessToken = jwtUtil.createToken(member.getEmail(), member.getRole().name());
+        Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setPath("/");
         cookie.setMaxAge(3600);
         response.addCookie(cookie);

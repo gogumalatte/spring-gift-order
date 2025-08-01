@@ -27,16 +27,16 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String token = Optional.ofNullable(request.getHeader("Authorization"))
+        String accessToken = Optional.ofNullable(request.getHeader("Authorization"))
             .filter(h -> h.startsWith("Bearer "))
             .map(h -> h.substring(7))
             .orElseGet(() -> extractTokenFromCookie(request));
 
-        if (token == null || !jwtUtil.validateToken(token)) {
+        if (accessToken == null || !jwtUtil.validateToken(accessToken)) {
             throw new AuthenticationException("유효하지 않은 토큰이거나 토큰이 없습니다.");
         }
 
-        request.setAttribute("userEmail", jwtUtil.getClaims(token).getSubject());
+        request.setAttribute("userEmail", jwtUtil.getClaims(accessToken).getSubject());
         return true;
     }
 

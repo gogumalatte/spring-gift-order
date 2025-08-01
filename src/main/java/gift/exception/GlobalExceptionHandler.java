@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public Object handleDataIntegrityViolationException(
-        DataIntegrityViolationException ex, // 1. 예외 객체(ex)를 파라미터로 추가
+        DataIntegrityViolationException ex,
         HttpServletRequest request
     ) {
         String message;
@@ -77,6 +77,11 @@ public class GlobalExceptionHandler {
         ModelAndView modelAndView = new ModelAndView("error/409");
         modelAndView.addObject("errorMessage", message);
         return modelAndView;
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

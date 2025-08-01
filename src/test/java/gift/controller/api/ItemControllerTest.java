@@ -55,9 +55,9 @@ class ItemControllerTest {
     @BeforeEach
     void setUp() {
         LoginResponse adminLogin = memberService.login(new MemberLoginRequest("admin@example.com", "admin1234"));
-        adminToken = adminLogin.token();
+        adminToken = adminLogin.accessToken();
         LoginResponse userLogin = memberService.login(new MemberLoginRequest("user@example.com", "user1234"));
-        userToken = userLogin.token();
+        userToken = userLogin.accessToken();
         testItem = itemRepository.save(new Item(null, "테스트 상품", 1000, "test.jpg"));
     }
 

@@ -45,9 +45,9 @@ public class WebMemberController {
         HttpServletResponse response
     ) {
         LoginResponse loginResponse = memberService.login(request);
-        String token = loginResponse.token();
+        String accessToken = loginResponse.accessToken();
 
-        Cookie cookie = new Cookie("accessToken", token);
+        Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setPath("/");
         cookie.setMaxAge(3600);
         cookie.setHttpOnly(true);
