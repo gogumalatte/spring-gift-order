@@ -1,46 +1,77 @@
-name: Deploy to AWS EC2
+name: Deploy to AWS EC2 without deploy.sh
 
 on:
   push:
     branches:
-      - step3
+      - step3 # 또는 main 등 배포하려는 브랜치
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # 1. 소스 코드 가져오기
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-
+      # 2. JDK 21 설치
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Zip project files
-        run: zip -r spring-gift-order.zip .
+      # 3. Gradle 실행 권한 추가
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
 
-      - name: Transfer to EC2
-        run: aws s3 cp spring-gift-order.zip s3://${{ secrets.AWS_S3_BUCKET_NAME }}/
+      # 4. 프로젝트 빌드 (테스트 제외)
+      - name: Build with Gradle
+        run: ./gradlew build -x test
 
-      - name: Execute deployment script on EC2
+      # 5. EC2에 접속하여 기존 프로세스 종료 및 로그 파일 정리
+      - name: Kill existing process and clean up
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
           script: |
-            sudo apt-get update
-            sudo apt-get install -y openjdk-21-jdk # EC2에 Java 설치
-            aws s3 cp s3://${{ secrets.AWS_S3_BUCKET_NAME }}/spring-gift-order.zip .
-            unzip -o spring-gift-order.zip
-            chmod +x ./deploy.sh
-            ./deploy.sh
+            # 실행 중인 jar 파일이 있으면 종료
+            pgrep -f 'spring-gift-0.0.1-SNAPSHOT.jar' | xargs -r kill -9
+
+            # 기존 jar 파일 삭제 (선택 사항)
+            rm -f /home/ubuntu/*.jar
+            
+            # 기존 로그 파일 삭제
+            rm -f /home/ubuntu/log/deploy.log
+
+      # 6. 빌드된 JAR 파일을 EC2로 복사
+      - name: Transfer JAR to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
+          source: "build/libs/spring-gift-0.0.1-SNAPSHOT.jar"
+          target: "/home/ubuntu"
+
+      # 7. EC2에서 새 애플리케이션 실행
+      - name: Execute remote commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
+          script: |
+            # 로그 디렉토리가 없으면 생성
+            if [ ! -d "/home/ubuntu/log" ]; then
+              mkdir /home/ubuntu/log
+            fi
+            
+            # 새 애플리케이션 실행
+            nohup java -jar \
+              -Dspring.profiles.active=prod \
+              -Dkakao.client.id=${{ secrets.KAKAO_CLIENT_ID }} \
+              -Dkakao.redirect.uri=${{ secrets.KAKAO_REDIRECT_URI }} \
+              /home/ubuntu/spring-gift-0.0.1-SNAPSHOT.jar \
+              > /home/ubuntu/log/deploy.log 2>&1 &
