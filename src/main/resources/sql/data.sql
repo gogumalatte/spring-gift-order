@@ -1,6 +1,6 @@
 -- 회원 초기 데이터
-INSERT INTO members (email, password, role) VALUES ('user@example.com', '$2a$10$/yZS/3sclhWloFTyogEIY.GUv3mKAytUmyr29/5rtltVVCAbR.sTK', 'USER');
-INSERT INTO members (email, password, role) VALUES ('admin@example.com', '$2a$10$5QrNbYuaqZQgiRl50deLLOqIzpmWuiZM1YK2aaj9i6ooL7.JseKua', 'ADMIN');
+INSERT INTO members (email, password, member_role) VALUES ('user@example.com', '$2a$10$/yZS/3sclhWloFTyogEIY.GUv3mKAytUmyr29/5rtltVVCAbR.sTK', 'USER');
+INSERT INTO members (email, password, member_role) VALUES ('admin@example.com', '$2a$10$5QrNbYuaqZQgiRl50deLLOqIzpmWuiZM1YK2aaj9i6ooL7.JseKua', 'ADMIN');
 
 -- 상품 초기 데이터
 INSERT INTO products (name, price, image_url) VALUES ('라이언 인형', 25000, 'https://example.com/ryan-doll.jpg');

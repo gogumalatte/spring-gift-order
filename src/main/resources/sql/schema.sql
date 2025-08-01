@@ -9,7 +9,7 @@ CREATE TABLE members (
                          id          BIGINT          PRIMARY KEY AUTO_INCREMENT,
                          email       VARCHAR(255)    NOT NULL UNIQUE,
                          password    VARCHAR(255)    NOT NULL,
-                         role        VARCHAR(50)     NOT NULL,
+                         member_role        VARCHAR(50)     NOT NULL,
                          nickname VARCHAR(255),
                          profile_image_url VARCHAR(255),
                          kakao_access_token  VARCHAR(512)
@@ -33,7 +33,7 @@ CREATE TABLE options (
                          FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
-CREATE TABLE orders
+CREATE TABLE product_orders
 (
     id              BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id       BIGINT       NOT NULL,

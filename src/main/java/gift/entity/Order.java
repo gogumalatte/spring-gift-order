@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "product_orders")
 public class Order {
 
     @Id

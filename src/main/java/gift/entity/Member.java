@@ -24,7 +24,7 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "member_role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
     @OneToMany(mappedBy = "member", orphanRemoval = true)
