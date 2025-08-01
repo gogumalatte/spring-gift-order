@@ -62,7 +62,7 @@ jobs:
             fi
             
             # 새 애플리케이션 실행
-            nohup java -jar \
+            nohup java -Xmx512m -jar \
               -Dspring.profiles.active=prod \
               -Dkakao.client.id=${{ secrets.KAKAO_CLIENT_ID }} \
               -Dkakao.redirect.uri=${{ secrets.KAKAO_REDIRECT_URI }} \
