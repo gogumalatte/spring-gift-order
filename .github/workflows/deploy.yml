@@ -28,8 +28,8 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
+          username: ${{ secrets.AWS_EC2_USERNAME }}
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           script: |
             # 실행 중인 jar 파일이 있으면 종료
             pgrep -f 'spring-gift-0.0.1-SNAPSHOT.jar' | xargs -r kill -9
@@ -44,7 +44,7 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.AWS_EC2_HOST }}
-          username: ubuntu
+          username: ${{ secrets.AWS_EC2_USERNAME }}
           key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           source: "build/libs/spring-gift-0.0.1-SNAPSHOT.jar"
           target: "/home/ubuntu"
@@ -53,7 +53,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_EC2_HOST }}
-          username: ubuntu
+          username: ${{ secrets.AWS_EC2_USERNAME }}
           key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
           script: |
             # 로그 디렉토리가 없으면 생성
