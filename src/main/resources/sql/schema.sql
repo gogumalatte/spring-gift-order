@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS product_orders;
+DROP TABLE IF EXISTS wishes;
+DROP TABLE IF EXISTS options;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS members;
+
 CREATE TABLE members
 (
     id                  BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -24,7 +30,7 @@ CREATE TABLE options
     quantity   INT          NOT NULL,
     product_id BIGINT,
     version    BIGINT,
-    FOREIGN KEY (product_id) REFERENCES products (id)
+    CONSTRAINT FK_OPTIONS_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES products (id)
 );
 
 CREATE TABLE wishes
@@ -33,8 +39,8 @@ CREATE TABLE wishes
     member_id  BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
     quantity   INT    NOT NULL,
-    FOREIGN KEY (member_id) REFERENCES members (id),
-    FOREIGN KEY (product_id) REFERENCES products (id),
+    CONSTRAINT FK_WISHES_ON_MEMBER FOREIGN KEY (member_id) REFERENCES members (id),
+    CONSTRAINT FK_WISHES_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES products (id),
     CONSTRAINT UK_MEMBER_PRODUCT UNIQUE (member_id, product_id)
 );
 
@@ -44,8 +50,8 @@ CREATE TABLE product_orders
     member_id       BIGINT       NOT NULL,
     option_id       BIGINT       NOT NULL,
     quantity        INT          NOT NULL,
-    order_date_time TIMESTAMP    NOT NULL,
+    order_date_time TIMESTAMP WITH TIME ZONE NOT NULL,
     order_message   TEXT,
-    FOREIGN KEY (member_id) REFERENCES members (id),
-    FOREIGN KEY (option_id) REFERENCES options (id)
+    CONSTRAINT FK_PRODUCT_ORDERS_ON_MEMBER FOREIGN KEY (member_id) REFERENCES members (id),
+    CONSTRAINT FK_PRODUCT_ORDERS_ON_OPTION FOREIGN KEY (option_id) REFERENCES options (id)
 );
