@@ -22,7 +22,7 @@ public class Option {
     private String name;
 
     @Column(nullable = false)
-    private int quantity;
+    private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -52,7 +52,7 @@ public class Option {
         return name;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
